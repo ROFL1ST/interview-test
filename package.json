@@ -1,7 +1,7 @@
 {
   "name": "widya-robotics-auth-api",
   "version": "1.0.0",
-  "description": "REST API Portal Autentikasi dengan Express.js, PostgreSQL, dan Knex.js - PT Widya Informasi Nusantara",
+  "description": "REST API authentication service with Express, PostgreSQL, and Knex",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",

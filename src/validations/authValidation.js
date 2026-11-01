@@ -1,9 +1,5 @@
 const Joi = require('joi');
 
-/**
- * Validation schema for User Registration
- * Data required: nama (name), email, jenis kelamin (gender), password
- */
 const registerSchema = Joi.object({
   name: Joi.string().min(2).max(100).trim().required().messages({
     'string.empty': 'Nama tidak boleh kosong',
@@ -34,9 +30,6 @@ const registerSchema = Joi.object({
     }),
 });
 
-/**
- * Validation schema for User Login
- */
 const loginSchema = Joi.object({
   email: Joi.string().email().trim().lowercase().required().messages({
     'string.empty': 'Email tidak boleh kosong',

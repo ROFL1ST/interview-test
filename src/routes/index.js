@@ -8,7 +8,6 @@ const db = require('../config/database');
 
 const router = express.Router();
 
-// Root API Health Check
 router.get('/health', async (req, res) => {
   let dbStatus = 'disconnected';
   try {
@@ -18,20 +17,15 @@ router.get('/health', async (req, res) => {
     dbStatus = `error: ${err.message}`;
   }
 
-  return ApiResponse.success(res, 'Widya Robotics Auth API is running smoothly', {
+  return ApiResponse.success(res, 'OK', {
     status: 'healthy',
     timestamp: new Date().toISOString(),
     database: dbStatus,
   });
 });
 
-// Auth Routes (/api/v1/auth)
 router.use('/auth', authRoutes);
-
-// User Routes (/api/v1/users)
 router.use('/users', userRoutes);
-
-// Profile direct alias endpoint (/api/v1/profile)
 router.get('/profile', authenticate, userController.getProfile);
 
 module.exports = router;

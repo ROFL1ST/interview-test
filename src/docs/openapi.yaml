@@ -1,32 +1,25 @@
 openapi: 3.0.3
 info:
-  title: Widya Robotics Authentication Portal API
-  description: >
-    REST API Portal Autentikasi untuk Seleksi Software Engineer di PT Widya Informasi Nusantara (Widya Robotics).
-    Menyediakan fungsionalitas pembuatan akun (register), login dengan kredensial, proteksi endpoint dengan JWT,
-    serta pengambilan data profil user.
+  title: Authentication API
+  description: REST API Authentication Service (Register, Login, User Profile)
   version: 1.0.0
-  contact:
-    name: Danendra
 servers:
   - url: http://localhost:3000
-    description: Local Development Server
 
 paths:
   /api/v1/health:
     get:
-      summary: Health Check Endpoint
-      description: Memeriksa status kesehatan server dan koneksi database PostgreSQL.
+      summary: Health check
       tags:
         - Health
       responses:
         '200':
-          description: Server berjalan normal
+          description: OK
           content:
             application/json:
               example:
                 success: true
-                message: Widya Robotics Auth API is running smoothly
+                message: OK
                 data:
                   status: healthy
                   timestamp: "2026-11-01T12:00:00.000Z"
@@ -34,10 +27,9 @@ paths:
 
   /api/v1/auth/register:
     post:
-      summary: Pembuatan Akun Baru (Register)
-      description: Pendaftaran user baru dengan nama, email, password, dan jenis kelamin.
+      summary: Register account
       tags:
-        - Authentication
+        - Auth
       requestBody:
         required: true
         content:
@@ -68,7 +60,7 @@ paths:
                   example: laki-laki
       responses:
         '201':
-          description: Akun berhasil dibuat
+          description: User created
           content:
             application/json:
               example:
@@ -82,29 +74,15 @@ paths:
                   created_at: "2026-11-01T12:00:00.000Z"
                   updated_at: "2026-11-01T12:00:00.000Z"
         '400':
-          description: Validasi input gagal
-          content:
-            application/json:
-              example:
-                success: false
-                message: Validasi gagal, mohon periksa kembali input Anda
-                errors:
-                  - field: email
-                    message: Format email tidak valid
+          description: Validation error
         '409':
-          description: Email sudah terdaftar
-          content:
-            application/json:
-              example:
-                success: false
-                message: Email sudah terdaftar. Silakan gunakan email lain
+          description: Email already registered
 
   /api/v1/auth/login:
     post:
-      summary: Login User
-      description: Melakukan autentikasi menggunakan email dan password untuk mendapatkan token JWT.
+      summary: Login
       tags:
-        - Authentication
+        - Auth
       requestBody:
         required: true
         content:
@@ -125,7 +103,7 @@ paths:
                   example: secret123
       responses:
         '200':
-          description: Login berhasil dan mengembalikan token JWT
+          description: Login success
           content:
             application/json:
               example:
@@ -138,27 +116,19 @@ paths:
                     name: Budi Pratama
                     email: budi.pratama@example.com
                     gender: laki-laki
-        '400':
-          description: Input tidak valid
         '401':
-          description: Kredensial tidak cocok
-          content:
-            application/json:
-              example:
-                success: false
-                message: Kombinasi email atau password salah
+          description: Invalid credentials
 
   /api/v1/users/profile:
     get:
-      summary: Mendapatkan Profil User
-      description: Mengambil data profil user yang saat ini sedang login menggunakan header Authorization Bearer JWT.
+      summary: Get user profile
       tags:
         - Users
       security:
         - BearerAuth: []
       responses:
         '200':
-          description: Profil user berhasil diambil
+          description: Success
           content:
             application/json:
               example:
@@ -172,12 +142,7 @@ paths:
                   created_at: "2026-11-01T12:00:00.000Z"
                   updated_at: "2026-11-01T12:00:00.000Z"
         '401':
-          description: Token tidak ada, tidak valid, atau kedaluwarsa
-          content:
-            application/json:
-              example:
-                success: false
-                message: Sesi telah berakhir (Token expired). Silakan login kembali
+          description: Unauthorized
 
 components:
   securitySchemes:

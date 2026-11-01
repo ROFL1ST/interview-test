@@ -4,33 +4,24 @@ const db = require('./config/database');
 
 const PORT = env.PORT || 3000;
 
-// Test database connection before server start
 const startServer = async () => {
   try {
     await db.raw('SELECT 1');
-    console.log('✅ Berhasil terhubung ke database PostgreSQL');
+    console.log('Database connected');
   } catch (error) {
-    console.warn('⚠️  Peringatan: Gagal terhubung ke database saat inisialisasi.');
-    console.warn('   Pastikan PostgreSQL sudah berjalan (misal: docker-compose up -d) dan database telah dimigrasi.');
-    console.warn(`   Detail error: ${error.message}\n`);
+    console.error('Database connection failed:', error.message);
   }
 
   const server = app.listen(PORT, () => {
-    console.log(`🚀 Server berjalan di http://localhost:${PORT}`);
-    console.log(`📑 Dokumentasi Swagger UI: http://localhost:${PORT}/api-docs`);
-    console.log(`🏥 Health Check: http://localhost:${PORT}/api/v1/health`);
+    console.log(`Server listening on port ${PORT}`);
   });
 
-  // Graceful shutdown handling
   const shutdown = async () => {
-    console.log('\n🛑 Mematikan server secara aman (Graceful shutdown)...');
     server.close(async () => {
-      console.log('🔒 HTTP server ditutup.');
       try {
         await db.destroy();
-        console.log('🔒 Koneksi PostgreSQL ditutup.');
       } catch (err) {
-        console.error('Error saat menutup database:', err);
+        console.error('Error closing database connection:', err);
       }
       process.exit(0);
     });

@@ -1,14 +1,7 @@
 const authService = require('../services/authService');
 const ApiResponse = require('../utils/apiResponse');
 
-/**
- * Authentication Controller: Handles incoming HTTP requests for Auth
- */
 class AuthController {
-  /**
-   * Register a new user
-   * POST /api/v1/auth/register
-   */
   async register(req, res, next) {
     try {
       const { name, email, password, gender } = req.body;
@@ -31,10 +24,6 @@ class AuthController {
     }
   }
 
-  /**
-   * User login
-   * POST /api/v1/auth/login
-   */
   async login(req, res, next) {
     try {
       const { email, password } = req.body;

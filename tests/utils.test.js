@@ -1,9 +1,9 @@
 const { hashPassword, comparePassword } = require('../src/utils/password');
 const { generateToken, verifyToken } = require('../src/utils/jwt');
 
-describe('Utility Functions Test Suite', () => {
-  describe('Password Hashing Utility', () => {
-    it('should hash a plain password properly and match via comparePassword', async () => {
+describe('Utils', () => {
+  describe('password', () => {
+    it('should hash and compare password correctly', async () => {
       const password = 'SecretPassword123';
       const hash = await hashPassword(password);
 
@@ -18,8 +18,8 @@ describe('Utility Functions Test Suite', () => {
     });
   });
 
-  describe('JWT Token Utility', () => {
-    it('should generate and verify JWT token successfully', () => {
+  describe('jwt', () => {
+    it('should generate and verify JWT token', () => {
       const payload = { id: 1, email: 'test@widya.ai' };
       const token = generateToken(payload);
 

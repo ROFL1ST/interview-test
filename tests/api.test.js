@@ -3,10 +3,9 @@ const app = require('../src/app');
 const userRepository = require('../src/repositories/userRepository');
 const { generateToken } = require('../src/utils/jwt');
 
-// Mock userRepository to test endpoints independently of DB availability
 jest.mock('../src/repositories/userRepository');
 
-describe('API Endpoints Test Suite', () => {
+describe('API Endpoints', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -16,7 +15,7 @@ describe('API Endpoints Test Suite', () => {
       const res = await request(app).get('/');
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
-      expect(res.body.data.apiDocumentation).toBe('/api-docs');
+      expect(res.body.data.docs).toBe('/api-docs');
     });
 
     it('GET /api/v1/health should return health status', async () => {
@@ -97,7 +96,7 @@ describe('API Endpoints Test Suite', () => {
       expect(res.status).toBe(201);
       expect(res.body.success).toBe(true);
       expect(res.body.data.email).toBe('budi@widya.ai');
-      expect(res.body.data.password).toBeUndefined(); // ensure password is not leaked
+      expect(res.body.data.password).toBeUndefined();
     });
   });
 
@@ -147,9 +146,7 @@ describe('API Endpoints Test Suite', () => {
 
       const token = generateToken({ id: mockUser.id, email: mockUser.email });
 
-      // authMiddleware checks findById
       userRepository.findById.mockResolvedValueOnce(mockUser);
-      // userService.getProfile calls findById
       userRepository.findById.mockResolvedValueOnce(mockUser);
 
       const res = await request(app)

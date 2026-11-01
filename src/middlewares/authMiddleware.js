@@ -2,9 +2,6 @@ const { verifyToken } = require('../utils/jwt');
 const ApiResponse = require('../utils/apiResponse');
 const userRepository = require('../repositories/userRepository');
 
-/**
- * Authentication Middleware: Protects endpoints using Bearer JWT Token
- */
 const authenticate = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
@@ -18,7 +15,6 @@ const authenticate = async (req, res, next) => {
     }
 
     const token = authHeader.split(' ')[1];
-
     if (!token) {
       return ApiResponse.error(res, 'Token autentikasi tidak valid atau kosong', 401);
     }
@@ -33,13 +29,11 @@ const authenticate = async (req, res, next) => {
       return ApiResponse.error(res, 'Token tidak valid atau telah dirusak', 401);
     }
 
-    // Verify user still exists in database
     const user = await userRepository.findById(decoded.id);
     if (!user) {
       return ApiResponse.error(res, 'User dari token ini sudah tidak terdaftar', 401);
     }
 
-    // Attach user (without password) to request
     req.user = user;
     next();
   } catch (error) {
