@@ -1,0 +1,187 @@
+openapi: 3.0.3
+info:
+  title: Widya Robotics Authentication Portal API
+  description: >
+    REST API Portal Autentikasi untuk Seleksi Software Engineer di PT Widya Informasi Nusantara (Widya Robotics).
+    Menyediakan fungsionalitas pembuatan akun (register), login dengan kredensial, proteksi endpoint dengan JWT,
+    serta pengambilan data profil user.
+  version: 1.0.0
+  contact:
+    name: Danendra
+servers:
+  - url: http://localhost:3000
+    description: Local Development Server
+
+paths:
+  /api/v1/health:
+    get:
+      summary: Health Check Endpoint
+      description: Memeriksa status kesehatan server dan koneksi database PostgreSQL.
+      tags:
+        - Health
+      responses:
+        '200':
+          description: Server berjalan normal
+          content:
+            application/json:
+              example:
+                success: true
+                message: Widya Robotics Auth API is running smoothly
+                data:
+                  status: healthy
+                  timestamp: "2026-11-01T12:00:00.000Z"
+                  database: connected
+
+  /api/v1/auth/register:
+    post:
+      summary: Pembuatan Akun Baru (Register)
+      description: Pendaftaran user baru dengan nama, email, password, dan jenis kelamin.
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - email
+                - password
+                - gender
+              properties:
+                name:
+                  type: string
+                  example: Budi Pratama
+                email:
+                  type: string
+                  format: email
+                  example: budi.pratama@example.com
+                password:
+                  type: string
+                  format: password
+                  minLength: 6
+                  example: secret123
+                gender:
+                  type: string
+                  enum: [male, female, laki-laki, perempuan]
+                  example: laki-laki
+      responses:
+        '201':
+          description: Akun berhasil dibuat
+          content:
+            application/json:
+              example:
+                success: true
+                message: Registrasi berhasil. Akun Anda telah dibuat
+                data:
+                  id: 1
+                  name: Budi Pratama
+                  email: budi.pratama@example.com
+                  gender: laki-laki
+                  created_at: "2026-11-01T12:00:00.000Z"
+                  updated_at: "2026-11-01T12:00:00.000Z"
+        '400':
+          description: Validasi input gagal
+          content:
+            application/json:
+              example:
+                success: false
+                message: Validasi gagal, mohon periksa kembali input Anda
+                errors:
+                  - field: email
+                    message: Format email tidak valid
+        '409':
+          description: Email sudah terdaftar
+          content:
+            application/json:
+              example:
+                success: false
+                message: Email sudah terdaftar. Silakan gunakan email lain
+
+  /api/v1/auth/login:
+    post:
+      summary: Login User
+      description: Melakukan autentikasi menggunakan email dan password untuk mendapatkan token JWT.
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: budi.pratama@example.com
+                password:
+                  type: string
+                  format: password
+                  example: secret123
+      responses:
+        '200':
+          description: Login berhasil dan mengembalikan token JWT
+          content:
+            application/json:
+              example:
+                success: true
+                message: Login berhasil
+                data:
+                  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                  user:
+                    id: 1
+                    name: Budi Pratama
+                    email: budi.pratama@example.com
+                    gender: laki-laki
+        '400':
+          description: Input tidak valid
+        '401':
+          description: Kredensial tidak cocok
+          content:
+            application/json:
+              example:
+                success: false
+                message: Kombinasi email atau password salah
+
+  /api/v1/users/profile:
+    get:
+      summary: Mendapatkan Profil User
+      description: Mengambil data profil user yang saat ini sedang login menggunakan header Authorization Bearer JWT.
+      tags:
+        - Users
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Profil user berhasil diambil
+          content:
+            application/json:
+              example:
+                success: true
+                message: Data profile user berhasil diambil
+                data:
+                  id: 1
+                  name: Budi Pratama
+                  email: budi.pratama@example.com
+                  gender: laki-laki
+                  created_at: "2026-11-01T12:00:00.000Z"
+                  updated_at: "2026-11-01T12:00:00.000Z"
+        '401':
+          description: Token tidak ada, tidak valid, atau kedaluwarsa
+          content:
+            application/json:
+              example:
+                success: false
+                message: Sesi telah berakhir (Token expired). Silakan login kembali
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

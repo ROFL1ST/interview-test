@@ -1,0 +1,34 @@
+const ApiResponse = require('../utils/apiResponse');
+
+/**
+ * Middleware factory to validate request body using Joi schemas
+ * @param {import('joi').ObjectSchema} schema
+ */
+const validate = (schema) => {
+  return (req, res, next) => {
+    const { error, value } = schema.validate(req.body, {
+      abortEarly: false,
+      stripUnknown: true,
+    });
+
+    if (error) {
+      const errorDetails = error.details.map((detail) => ({
+        field: detail.path.join('.'),
+        message: detail.message,
+      }));
+
+      return ApiResponse.error(
+        res,
+        'Validasi gagal, mohon periksa kembali input Anda',
+        400,
+        errorDetails
+      );
+    }
+
+    // Replace req.body with validated & sanitized value
+    req.body = value;
+    next();
+  };
+};
+
+module.exports = validate;
